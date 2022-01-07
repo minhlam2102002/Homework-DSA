@@ -10,7 +10,7 @@ using namespace std;
 class Table {
 private:
     string _name, _type;
-    int _len;
+    int _len, _len_sparse;
     int* _data;
     int** _sparse;
 public:
@@ -22,6 +22,7 @@ public:
     string getType();
     void read(ifstream& fin);
     void print(ofstream& fout);
+    void print(ostream& os);
     int query(int left, int right);
 };
 

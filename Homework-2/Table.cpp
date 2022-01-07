@@ -20,17 +20,21 @@ int (*get_func(string type))(int, int) {
     if(type == "GCD") return gcd;
     return nullptr;
 }
-int** buildSparseTable(int* data, int len, int(*func)(int, int)) {
+int** buildSparseTable(int* data, int len, int& len_sparse, int(*func)(int, int)) {
     // build sparse table from data
     int** sparse = new int*[len];
+    len_sparse = (int)log2(len) + 1;
     for(int i = 0; i < len; i++) {
-        sparse[i] = new int[(int)log2(len) + 1];
+        sparse[i] = new int[len_sparse];
+        for(int j = 0; j < len_sparse; j++) {
+            sparse[i][j] = 0;
+        }
     }
     
     for(int i = 0; i < len; i++) {
         sparse[i][0] = data[i];
     }
-    for(int j = 1; j <= log2(len); j++) {
+    for(int j = 1; j < len_sparse; j++) {
         for(int i = 0; i <= len - (1 << j); i++) {
             sparse[i][j] = func(sparse[i][j - 1], sparse[i + (1 << (j - 1))][j - 1]);
         }
@@ -42,7 +46,7 @@ Table::Table(string name, string type, int* data, int len) {
     _type = type;
     _data = data;
     _len = len;
-    _sparse = buildSparseTable(_data, _len, get_func(_type));
+    _sparse = buildSparseTable(_data, _len, _len_sparse, get_func(_type));
 }
 
 Table::~Table() {
@@ -55,9 +59,10 @@ void Table::read(ifstream &fin) {
     _data = new int[_len];
     _sparse = new int*[_len];
     for (int i = 0; i < _len; i++) fin >> _data[i];
+    _len_sparse = (int)log2(_len) + 1;
     for(int i = 0; i < _len; i++) {
-        _sparse[i] = new int[(int)log2(_len) + 1];
-        for(int j = 0; j <= (int)log2(_len); j++) {
+        _sparse[i] = new int[_len_sparse];
+        for(int j = 0; j < _len_sparse; j++) {
             fin >> _sparse[i][j];
         }
     }
@@ -68,10 +73,18 @@ void Table::print(ofstream &fout) {
     for (int i = 0; i < _len; i++) fout << _data[i] << " ";
     fout << endl;
     for(int i = 0; i < _len; i++) {
-        for(int j = 0; j <= (int)log2(_len); j++) {
+        for(int j = 0; j <_len_sparse; j++) {
             fout << _sparse[i][j] << " ";
         }
         fout << endl;
+    }
+}
+void Table::print(ostream& os) {
+    for(int i = 0; i < _len; i++) {
+        for(int j = 0; j <_len_sparse; j++) {
+            os << _sparse[i][j] << " ";
+        }
+        os << endl;
     }
 }
 string Table::getName() {

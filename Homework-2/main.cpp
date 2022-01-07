@@ -43,11 +43,7 @@ int main(int argc, char **argv) {
         for (int i = 0; i < len; i++) {
             data[i] = toInt(argvS[i + cnt]);
         }
-        if (tableManager.addTable(new Table(name, type, data, len))) {
-            for (int i = 0; i < len; i++)
-                cout << data[i] << " ";
-            cout << endl;
-        }
+        tableManager.addTable(new Table(name, type, data, len));
     } else if (req == "query") {
         int left = toInt(argvS[++cnt]);
         int right = toInt(argvS[++cnt]);

@@ -40,5 +40,6 @@ bool TableManager::addTable(Table *t) {
     } else {
         _tables[_len++] = *t;
     }
+    t->print(cout);
     return true;
 }
