@@ -1,24 +1,5 @@
-#include <iostream>
-#include <string>
-#include <sstream>
-#include <vector>
+#include "topo.h"
 #define FILE_NAME "input.txt"
-using namespace std;
-
-struct Trailer;
-
-// dinh nghia ham
-struct Leader{
-    int key;
-    int count;
-    Leader* next;
-    Trailer* trail;
-};
-
-struct Trailer{
-    Leader* id;
-    Trailer* next;
-};
 
 Leader* addLeader(Leader* &head, Leader* &tail, int key, int& cnt){
     Leader* tmp;
@@ -116,67 +97,20 @@ void delTopo(Leader* head, Leader* tail){
     delete tmp;
     tmp = nullptr;
 }
-
-int maxEle(vector<int> vect){
-    int max = -1;
-    for(auto i : vect){
-        if (i > max) max = i;
-    }
-    return max;
-}
-
-int numberOfDigits(int a){
-    int res = 0;
-    while( a > 0){
-        a /= 10;
-        res++;
-    }
-    return res;
-}
-
-void countForRadix(vector<int> &vect, int mu){
-    int n = vect.size();
-    vector<int> output(n);
-    int count[10] = { 0 };
-
-    for (int i = 0; i < n; i++)
-        count[(vect[i] / mu) % 10]++;
  
-
-    for (int i = 1; i < 10; i++)
-        count[i] += count[i - 1];
- 
-
-    for (int i = n - 1; i >= 0; i--) {
-        output[count[(vect[i] / mu) % 10] - 1] = vect[i];
-        count[(vect[i] / mu) % 10]--;
+int checkType(){
+    ifstream fi(FILE_NAME);
+    if(!fi.is_open()){
+        cout << "cannot open file\n";
+        return 0;
     }
- 
-    for (int i = 0; i < n; i++)
-        vect[i] = output[i];
-}
- 
-void RadixSort(vector<int>& vect){
-    int max = maxEle(vect);
-    for (int mu = 1; max / mu > 0; mu *= 10)
-        countForRadix(vect, mu);
-}
-
-int main() {
-    vector<pair<int, int>> input = readFile();
-    Leader* head = new Leader;
-    Leader* a, *b, *tail = head;
-    int cnt = 0;
-    for(auto i : input){
-        a = addLeader(head, tail, i.first, cnt);
-        b = addLeader(head, tail, i.second, cnt);
-        addTopo(a, b);
-    }
-    showTopo(head, tail, cnt);
-    delTopo(head, tail);
-    cout << endl;
-    vector<int> test = {1,6,3,6,7,8,3,7,8,2,1,3,9};
-    RadixSort(test);
-    for(auto i : test) cout << i << " ";
-    cout << endl;
+    int type;
+    string s;
+    char check = '(';
+    fi >> s;
+    if(s[0] == check)
+        type = 1;
+    else type = 2;
+    fi.close();
+    return type;
 }
